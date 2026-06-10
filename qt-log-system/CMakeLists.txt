@@ -46,3 +46,17 @@ target_link_libraries(tst_log_helper PRIVATE Qt6::Core Qt6::Test)
 target_include_directories(tst_log_helper PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 add_test(NAME LogHelperTest COMMAND tst_log_helper)
+
+# ----------------------------------------------------------------------------
+# LogFormatter（文件输出 + 滚动切割）测试
+# ----------------------------------------------------------------------------
+add_executable(tst_log_formatter
+    tests/tst_log_formatter.cpp
+    src/log_formatter.h
+    src/log_formatter.cpp
+)
+
+target_link_libraries(tst_log_formatter PRIVATE Qt6::Core Qt6::Test)
+target_include_directories(tst_log_formatter PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+add_test(NAME LogFormatterTest COMMAND tst_log_formatter)
