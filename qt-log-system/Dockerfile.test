@@ -25,6 +25,7 @@ COPY tests/ tests/
 RUN cmake -B build -DCMAKE_BUILD_TYPE=Release \
     && cmake --build build --parallel $(nproc)
 
-# 默认运行测试（-v2 输出每个用例的 PASS/FAIL 详情）
-ENTRYPOINT ["./build/tst_log_helper"]
-CMD ["-v2"]
+# 默认运行全部测试（ctest 自动运行 LogHelperTest + LogFormatterTest）
+# -v 输出每个用例详情，--output-on-failure 在失败时打印完整输出
+ENTRYPOINT ["ctest", "--test-dir", "build", "--output-on-failure", "-v"]
+CMD []
