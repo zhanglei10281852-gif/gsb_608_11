@@ -1,0 +1,16 @@
+services:
+  # 主程序（构建过程中自动运行测试，测试失败则构建中断）
+  qt-log-system:
+    build:
+      context: ./qt-log-system
+      dockerfile: Dockerfile
+    container_name: qt-log-system
+    environment:
+      - QT_LOGGING_RULES=app.*.debug=false;app.network.debug=true
+
+  # 独立测试服务（仅运行测试，不启动主程序）
+  qt-log-test:
+    build:
+      context: ./qt-log-system
+      dockerfile: Dockerfile.test
+    container_name: qt-log-test

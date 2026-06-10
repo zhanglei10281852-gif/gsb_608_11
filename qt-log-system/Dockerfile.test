@@ -1,0 +1,30 @@
+# ============================================================================
+# Qt Log System - 测试专用镜像
+# 用法: run_tests.bat (Windows) 或 ./run_tests.sh (Linux/macOS)
+# ============================================================================
+
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 替换为阿里云镜像源
+RUN sed -i 's|http://archive.ubuntu.com|http://mirrors.aliyun.com|g' /etc/apt/sources.list \
+    && sed -i 's|http://security.ubuntu.com|http://mirrors.aliyun.com|g' /etc/apt/sources.list
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    qt6-base-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY CMakeLists.txt .
+COPY src/ src/
+COPY tests/ tests/
+
+RUN cmake -B build -DCMAKE_BUILD_TYPE=Release \
+    && cmake --build build --parallel $(nproc)
+
+# 默认运行测试（-v2 输出每个用例的 PASS/FAIL 详情）
+ENTRYPOINT ["./build/tst_log_helper"]
+CMD ["-v2"]
