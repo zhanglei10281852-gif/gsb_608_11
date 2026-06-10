@@ -4,13 +4,20 @@ REM Qt Log System - 一键 Docker 测试脚本 (Windows)
 REM 用法: run_tests.bat
 REM ============================================================================
 
+setlocal enabledelayedexpansion
+
+REM 生成唯一镜像 tag（时间戳 + 随机数），避免与并行实例冲突
+for /f "tokens=2 delims==" %%I in ('wmic os get localdatetime /value ^| find "="') do set dt=%%I
+set TAG=qt-log-test-%dt:~0,14%-%RANDOM%
+
 echo ============================================
 echo   Qt Log System - Docker Test Runner
+echo   Image tag: %TAG%
 echo ============================================
 echo.
 
 echo [1/3] Building test image...
-docker build -t qt-log-test -f qt-log-system/Dockerfile.test qt-log-system
+docker build -t %TAG% -f qt-log-system/Dockerfile.test qt-log-system
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo [FAILED] Docker build failed!
@@ -20,12 +27,12 @@ if %ERRORLEVEL% NEQ 0 (
 echo.
 echo [2/3] Running tests...
 echo.
-docker run --rm qt-log-test -v2
+docker run --rm %TAG%
 set TEST_EXIT=%ERRORLEVEL%
 
 echo.
 echo [3/3] Cleaning up image...
-docker rmi qt-log-test >nul 2>&1
+docker rmi %TAG% >nul 2>&1
 
 echo.
 if %TEST_EXIT% EQU 0 (
