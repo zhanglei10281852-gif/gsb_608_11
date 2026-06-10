@@ -25,6 +25,9 @@ COPY tests/ tests/
 RUN cmake -B build -DCMAKE_BUILD_TYPE=Release \
     && cmake --build build --parallel $(nproc)
 
-# 默认运行测试（-v2 输出每个用例的 PASS/FAIL 详情）
-ENTRYPOINT ["./build/tst_log_helper"]
-CMD ["-v2"]
+WORKDIR /app/build
+
+RUN echo '#!/bin/bash\nset -e\necho "============================================"\necho "  Running tst_log_helper (original 45 tests)"\necho "============================================"\n./tst_log_helper -v2\necho ""\necho "============================================"\necho "  Running tst_log_formatter (file/rotate tests)"\necho "============================================"\n./tst_log_formatter -v2\necho ""\necho "============================================"\necho "  ALL TESTS PASSED"\necho "============================================"' > /app/run-all-tests.sh \
+    && chmod +x /app/run-all-tests.sh
+
+ENTRYPOINT ["/app/run-all-tests.sh"]
